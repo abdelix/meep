@@ -30,13 +30,13 @@ bool compare_hdf5_datasets(const char *file1, const char *name1, const char *fil
   h5file f1(file1, h5file::READONLY, false);
   int rank1;
   size_t *dims1 = new size_t[expected_rank];
-  double *data1 = f1.read(name1, &rank1, dims1, expected_rank);
+  meep::realnum *data1 = f1.read(name1, &rank1, dims1, expected_rank);
   if (!data1) return false;
 
   h5file f2(file2, h5file::READONLY, false);
   int rank2;
   size_t *dims2 = new size_t[expected_rank];
-  double *data2 = f2.read(name2, &rank2, dims2, expected_rank);
+  meep::realnum *data2 = f2.read(name2, &rank2, dims2, expected_rank);
   if (!data2) return false;
 
   if (rank1 != expected_rank || rank2 != expected_rank) return false;
@@ -48,7 +48,7 @@ bool compare_hdf5_datasets(const char *file1, const char *name1, const char *fil
   };
 
   for (size_t n = 0; n < size; n++) {
-    double d1 = data1[n], d2 = data2[n], diff = fabs(d1 - d2), max = fmax(fabs(d1), fabs(d2));
+    meep::realnum d1 = data1[n], d2 = data2[n], diff = fabs(d1 - d2), max = fmax(fabs(d1), fabs(d2));
     if (diff > abs_tol || diff > max * rel_tol) return false;
   };
 

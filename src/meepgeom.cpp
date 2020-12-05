@@ -2299,7 +2299,7 @@ meep::realnum get_material_gradient(
 
   std::complex<double> dA_du[9] = {std::complex<double>(0, 0)};
   for (int i = 0; i < 9; i++)
-    dA_du[i] = (dA_du_1[i] - dA_du_0[i]) / (2 * du);
+    dA_du[i] = (dA_du_1[i] - dA_du_0[i]) / (2.0 * double(du));
 
   int dir_idx;
   if (field_dir == meep::Ex)

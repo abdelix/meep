@@ -35,12 +35,14 @@ namespace meep {
    However, we will default to using double-precision for large
    arrays, as the factor of two in memory and the moderate increase
    in speed currently don't seem worth the loss of precision. */
-#define MEEP_SINGLE 0 // 1 for single precision, 0 for double
+#define MEEP_SINGLE 1 // 1 for single precision, 0 for double
 #if MEEP_SINGLE
 typedef float realnum;
 #else
 typedef double realnum;
 #endif
+
+
 
 #define MEEP_MIN_OUTPUT_TIME 4.0 // output no more often than this many seconds
 
@@ -66,6 +68,8 @@ void matrix_invert(std::complex<double> (&Vinv)[9], std::complex<double> (&V)[9]
 std::vector<double> linspace(double freq_min, double freq_max, size_t Nfreq);
 
 double pml_quadratic_profile(double, void *);
+
+#define TO_CREALNUM(a) (std::complex<realnum>(a.real(),a.imag()))
 
 /* generic base class, only used by subclassing: represents susceptibility
    polarizability vector P = chi(omega) W  (where W = E or H). */
@@ -323,8 +327,8 @@ public:
   }
 
 protected:
-  double gyro_tensor[3][3];
-  double omega_0, gamma, alpha;
+  realnum gyro_tensor[3][3];
+  realnum omega_0, gamma, alpha;
   gyrotropy_model model;
 };
 
@@ -1012,7 +1016,7 @@ public:
   // fields::process_dft_component
   std::complex<double> process_dft_component(int rank, direction *ds, ivec min_corner,
                                              ivec max_corner, int num_freq, h5file *file,
-                                             double *buffer, int reim,
+                                             realnum *buffer, int reim,
                                              std::complex<double> *field_array, void *mode1_data,
                                              void *mode2_data, int ic_conjugate,
                                              bool retain_interp_weights, fields *parent);

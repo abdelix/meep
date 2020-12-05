@@ -30,6 +30,7 @@ typedef complex<double> cdouble;
 
 namespace meep {
 
+ 
 std::vector<double> linspace(double freq_min, double freq_max, size_t Nfreq) {
   double dfreq = Nfreq <= 1 ? 0.0 : (freq_max - freq_min) / (Nfreq - 1);
   std::vector<double> freq(Nfreq);
@@ -741,7 +742,7 @@ dft_fields fields::add_dft_fields(component *components, int num_components, con
 /* chunk-level processing for fields::process_dft_component.   */
 /***************************************************************/
 cdouble dft_chunk::process_dft_component(int rank, direction *ds, ivec min_corner, ivec max_corner,
-                                         int num_freq, h5file *file, double *buffer, int reim,
+                                         int num_freq, h5file *file, realnum *buffer, int reim,
                                          cdouble *field_array, void *mode1_data, void *mode2_data,
                                          int ic_conjugate, bool retain_interp_weights,
                                          fields *parent) {
@@ -819,7 +820,7 @@ cdouble dft_chunk::process_dft_component(int rank, direction *ds, ivec min_corne
                    ? parent->get_eps(loc)
                    : c_conjugate == Permeability
                          ? parent->get_mu(loc)
-                         : dft[omega.size() * (chunk_idx++) + num_freq] / stored_weight);
+                         : dft[omega.size() * (chunk_idx++) + num_freq] / TO_CREALNUM(stored_weight));
     if (include_dV_and_interp_weights) dft_val /= (sqrt_dV_and_interp_weights ? sqrt(w) : w);
 
     cdouble mode1val = 0.0, mode2val = 0.0;
@@ -1147,7 +1148,7 @@ void fields::output_dft_components(dft_chunk **chunklists, int num_chunklists, v
           array = collapse_array(array, &rank, dims, dirs, dft_volume);
           if (rank == 0) abort("%s:%i: internal error", __FILE__, __LINE__);
           size_t array_size = dims[0] * (rank >= 2 ? dims[1] * (rank == 3 ? dims[2] : 1) : 1);
-          double *real_array = new double[array_size];
+          realnum *real_array = new realnum[array_size];
           if (!real_array) abort("%s:%i:out of memory(%lu)", __FILE__, __LINE__, array_size);
           for (int reim = 0; reim < 2; reim++) {
             for (size_t n = 0; n < array_size; n++)
